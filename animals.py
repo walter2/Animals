@@ -1,14 +1,13 @@
 #animals.py
-#2014-09-05 22:18 -
 
 import unittest
-import time
+from datetime import datetime
 
 #ToDo 2014-09-23
 #1. DONE refactor tests
-#1.1 add class Animal()
+#1.1 DONE add class Animal()
 #2. sleep duration calculation
-#3. food diet type implementation
+#3. DONE food diet type implementation
 #4. self.is_hungry
 #5. scale for sleep and food
 #6. three different game types
@@ -25,14 +24,13 @@ class Animal():
         self.sleeping = False
         self.needs_sleep = True
     
-    def feed(self, food):
+    def eat(self, food):
         '''The animal takes only meet as food.
            If it is sleeping it cannot eat and
            will complain.'''
         if self.sleeping:
             return 'I am sleeping. Grr.'
         else:
-            #return isinstance(food, (Meat, Vegetable))
             return self.can_eat(food)
 
     def can_eat(self, food):
@@ -63,10 +61,12 @@ class Animal():
         else:
             return False
 
+
 class Carnivore(Animal):
 
     def can_eat(self, food):
         return food.is_meat
+
 
 class Vegetarian(Animal):
 
@@ -129,7 +129,7 @@ class Test(unittest.TestCase):
         self.bear.go_to_sleep()
         food = Meat()
         expected = 'I am sleeping. Grr.'
-        actual = self.bear.feed(food)
+        actual = self.bear.eat(food)
         self.assertEqual(expected, actual)
 
     def test_create_bear_and_sleep(self):
@@ -140,13 +140,13 @@ class Test(unittest.TestCase):
     def test_create_bear_and_feed_steak(self):
         steak = Meat()
         expected = True
-        actual = self.bear.feed(steak)
+        actual = self.bear.eat(steak)
         self.assertEqual(expected, actual)
 
     def test_create_bear_and_feed_carrot(self):
         carrot = Vegetable()
         expected = True
-        actual = self.bear.feed(carrot)
+        actual = self.bear.eat(carrot)
         self.assertEqual(expected, actual)
 
     def test_create_Omnivore(self):
@@ -170,10 +170,10 @@ class Test(unittest.TestCase):
         actual = self.goat.play()
         self.assertEqual(expected, actual)
 
-##    def test_a_new_goat_cannot_play(self):
-##        expected = False
-##        actual = self.goat.play()
-##        self.assertEqual(expected, actual)
+    def test_a_new_goat_cannot_play(self):
+        expected = False
+        actual = self.goat.play()
+        self.assertEqual(expected, actual)
 
     def test_sleeping_goat_cannot_go_to_sleep(self):
         self.goat.go_to_sleep()
@@ -185,7 +185,7 @@ class Test(unittest.TestCase):
         self.goat.go_to_sleep()
         food = Vegetable()
         expected = 'I am sleeping. Grr.'
-        actual = self.goat.feed(food)
+        actual = self.goat.eat(food)
         self.assertEqual(expected, actual)
 
     def test_create_goat_and_sleep(self):
@@ -196,13 +196,13 @@ class Test(unittest.TestCase):
     def test_create_goat_and_feed_vegies(self):
         carrot = Vegetable()
         expected = True
-        actual = self.goat.feed(carrot)
+        actual = self.goat.eat(carrot)
         self.assertEqual(expected, actual)
 
     def test_create_goat_and_feed_steak(self):
         steak = Meat()
         expected = False
-        actual = self.goat.feed(steak)
+        actual = self.goat.eat(steak)
         self.assertEqual(expected, actual)
 
     def test_create_Vegetarian(self):
@@ -225,10 +225,10 @@ class Test(unittest.TestCase):
         actual = self.lion.play()
         self.assertEqual(expected, actual)
 
-##    def test_a_new_lion_cannot_play(self):
-##        expected = False
-##        actual = self.lion.play()
-##        self.assertEqual(expected, actual)
+    def test_a_new_lion_cannot_play(self):
+        expected = False
+        actual = self.lion.play()
+        self.assertEqual(expected, actual)
 
     def test_sleeping_lion_cannot_go_to_sleep(self):
         self.lion.go_to_sleep()
@@ -240,7 +240,7 @@ class Test(unittest.TestCase):
         self.lion.go_to_sleep()
         food = Meat()
         expected = 'I am sleeping. Grr.'
-        actual = self.lion.feed(food)
+        actual = self.lion.eat(food)
         self.assertEqual(expected, actual)
 
     def test_create_lion_and_sleep(self):
@@ -251,13 +251,13 @@ class Test(unittest.TestCase):
     def test_create_lion_and_feed_steak(self):
         steak = Meat()
         expected = True
-        actual = self.lion.feed(steak)
+        actual = self.lion.eat(steak)
         self.assertEqual(expected, actual)
 
     def test_create_lion_and_feed_carrot(self):
         carrot = Vegetable()
         expected = False
-        actual = self.lion.feed(carrot)
+        actual = self.lion.eat(carrot)
         self.assertEqual(expected, actual)
 
     def test_create_Carnivore(self):
