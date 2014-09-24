@@ -43,7 +43,11 @@ class Animal():
         if self.sleeping:
             return 'I am sleeping. Grr.'
         else:
-            return self.can_eat(food)
+            if self.can_eat(food):
+                self.hunger_scale = 10
+                return True
+            else:
+                return False
 
     def can_eat(self, food):
         raise NotImplementedError
@@ -227,6 +231,13 @@ class Test(unittest.TestCase):
 
 #########
 
+    def test_new_goat_eats_carrots_and_is_full(self):
+        carrots = Vegetable()
+        self.goat.eat(carrots)
+        expected = 10
+        actual = self.goat.hunger_scale
+        self.assertEqual(expected, actual)
+
     def test_a_new_goat_that_slept_can_play(self):
         self.goat.start_sleeping()
         expected = True
@@ -281,6 +292,13 @@ class Test(unittest.TestCase):
         self.assertEqual(expected, actual)
 
 ####
+
+    def test_new_lion_eats_steak_and_is_full(self):
+        steak = Meat()
+        self.lion.eat(steak)
+        expected = 10
+        actual = self.lion.hunger_scale
+        self.assertEqual(expected, actual)
 
     def test_a_new_lion_that_slept_can_play(self):
         self.lion.start_sleeping()
