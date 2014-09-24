@@ -116,6 +116,11 @@ class Test(unittest.TestCase):
         self.lion = Carnivore()
         self.goat = Vegetarian()
 
+    def test_a_new_bear_is_totally_hungry(self):
+        expected = 0
+        actual = self.bear.hunger_scale
+        self.assertEqual(expected, actual)
+
     def test_a_new_bear_is_hungry(self):
         expected = True
         actual = self.bear.is_hungry
