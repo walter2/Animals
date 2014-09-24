@@ -28,13 +28,17 @@ class Animal():
            needs_sleep ... default: True; if the animal is tired or not
            sleep_start_time ... default: None; time (datetime) when animal starts sleeping
            is_hungry ... default: True; if animal needs food
-           hunger_scale ... default: 0; 0 means completely hungry, 10 means animal cannot eat more
+           hunger_scale ... default: 0; 0 means completely hungry,
+                            10 means animal cannot eat more
+           awake_scale ... default: 0; 0 means the animal is completely tired,
+                           10 means the animal is fully awake
         '''
         self.sleeping = False
         self.needs_sleep = True
         self.sleep_start_time = None
         self.is_hungry = True
         self.hunger_scale = 0
+        self.awake_scale = 0
     
     def eat(self, food):
         '''The animal only can eat food suitable food.
@@ -63,11 +67,13 @@ class Animal():
             return False
 
     def stop_sleeping(self):
-        '''Sets self.sleeping to Flase when the animal slept
-           enough and retruns True. Otherwise it returns False.
+        '''Sets self.sleeping to Flase and self.awake_scale to 10
+           when the animal slept enough and retruns True.
+           Otherwise it returns False.
         '''
         if int(datetime.now().second - self.sleep_start_time.second) > SLEEP_TIME_SECONDS:
             self.sleeping = False
+            self.awake_scale = 10
             return True
         else:
             return False
@@ -127,6 +133,19 @@ class Test(unittest.TestCase):
         self.bear = Omnivore()
         self.lion = Carnivore()
         self.goat = Vegetarian()
+
+    def test_a_new_bear_that_slept_is_totally_awake(self):
+        self.bear.start_sleeping()
+        time.sleep(2)
+        self.bear.stop_sleeping()
+        expected = 10
+        actual = self.bear.awake_scale
+        self.assertEqual(expected, actual)
+
+    def test_a_new_bear_is_totally_tried(self):
+        expected = 0
+        actual = self.bear.awake_scale
+        self.assertEqual(expected, actual)
 
     def test_new_bear_eats_steak_and_is_full(self):
         steak = Meat()
