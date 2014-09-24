@@ -5,19 +5,22 @@ import unittest
 import time
 
 #ToDo 2014-09-23
-#1. refactor tests
+#1. DONE refactor tests
 #1.1 add class Animal()
 #2. sleep duration calculation
 #3. food diet type implementation
 #4. self.is_hungry
 #5. scale for sleep and food
 #6. three different game types
+#7. separate tests out
+
 
 #configs
 SLEEP_TIME = 2
 
-
-class Carnivore():
+class Animal():
+    '''Base class for different animal types (Omnivore,
+       Vegetarian and Carnivore.'''
     def __init__(self):
         self.sleeping = False
         self.needs_sleep = True
@@ -29,7 +32,11 @@ class Carnivore():
         if self.sleeping:
             return 'I am sleeping. Grr.'
         else:
-            return isinstance(food, Meat)
+            #return isinstance(food, (Meat, Vegetable))
+            return self.can_eat(food)
+
+    def can_eat(self, food):
+        raise NotImplementedError
 
     def go_to_sleep(self):
         if not self.sleeping:
@@ -56,90 +63,35 @@ class Carnivore():
         else:
             return False
 
-class Vegetarian():
-    def __init__(self):
-        self.sleeping = False
-        self.needs_sleep = True
+class Carnivore(Animal):
+
+    def can_eat(self, food):
+        return food.is_meat
+
+class Vegetarian(Animal):
+
+    def can_eat(self, food):
+        return food.is_vegetable
+
+
+class Omnivore(Animal):
+
+    def can_eat(self, food):
+        return food.is_vegetable or food.is_meat
     
-    def feed(self, food):
-        '''The animal takes only meet as food.
-           If it is sleeping it cannot eat and
-           will complain.'''
-        if self.sleeping:
-            return 'I am sleeping. Grr.'
-        else:
-            return isinstance(food, Vegetable)
-
-    def go_to_sleep(self):
-        if not self.sleeping:
-            self.sleeping = True
-            self.needs_sleep = False
-            #self.sleep_release()
-            #time.sleep(SLEEP_TIME)
-            #self.sleeping = False
-            return True
-        else:
-            return False
-
-    def sleep_release(self):
-        '''Does currently not work.
-           Should reset self.sleep in the background when
-           go_to_sleep was called.'''
-        time.sleep(SLEEP_TIME)
-        self.sleeping = False
-
-    def play(self):
-        if not self.needs_sleep:
-            self.needs_sleep = True
-            return True
-        else:
-            return False
-
-class Omnivore():
-    def __init__(self):
-        self.sleeping = False
-        self.needs_sleep = True
-    
-    def feed(self, food):
-        '''The animal takes only meet as food.
-           If it is sleeping it cannot eat and
-           will complain.'''
-        if self.sleeping:
-            return 'I am sleeping. Grr.'
-        else:
-            return isinstance(food, (Meat, Vegetable))
-
-    def go_to_sleep(self):
-        if not self.sleeping:
-            self.sleeping = True
-            self.needs_sleep = False
-            #self.sleep_release()
-            #time.sleep(SLEEP_TIME)
-            #self.sleeping = False
-            return True
-        else:
-            return False
-
-    def sleep_release(self):
-        '''Does currently not work.
-           Should reset self.sleep in the background when
-           go_to_sleep was called.'''
-        time.sleep(SLEEP_TIME)
-        self.sleeping = False
-
-    def play(self):
-        if not self.needs_sleep:
-            self.needs_sleep = True
-            return True
-        else:
-            return False
-
         
 class Vegetable():
-    pass
+
+    def __init__(self):
+        self.is_vegetable = True
+        self.is_meat = False
+
 
 class Meat():
-    pass
+
+    def __init__(self):
+        self.is_vegetable = False
+        self.is_meat = True
 
 
 class Test(unittest.TestCase):
