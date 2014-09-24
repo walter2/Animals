@@ -7,7 +7,7 @@ from datetime import datetime
 #ToDo 2014-09-23
 #1. DONE refactor tests
 #1.1 DONE add class Animal()
-#2. sleep duration calculation
+#2. DONE sleep duration calculation
 #3. DONE food diet type implementation
 #4. self.is_hungry
 #5. scale for sleep and food
@@ -105,6 +105,11 @@ class Test(unittest.TestCase):
         self.bear = Omnivore()
         self.lion = Carnivore()
         self.goat = Vegetarian()
+
+    def test_a_new_bear_is_hungry(self):
+        expected = True
+        actual = self.bear.is_hungry
+        self.assertEqual(expected, actual)
 
     def test_a_new_bear_can_sleep_and_sleeps(self):
         self.bear.start_sleeping()
