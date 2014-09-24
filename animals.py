@@ -23,10 +23,18 @@ class Animal():
        Vegetarian and Carnivore.
     '''
     def __init__(self):
+        '''Default attributes of the animal:
+           sleeping ... default: False; if the animal is currently sleeping or not
+           needs_sleep ... default: True; if the animal is tired or not
+           sleep_start_time ... default: None; time (datetime) when animal starts sleeping
+           is_hungry ... default: True; if animal needs food
+           hunger_scale ... default: 0; 0 means completely hungry, 10 means animal cannot eat more
+        '''
         self.sleeping = False
         self.needs_sleep = True
         self.sleep_start_time = None
         self.is_hungry = True
+        self.hunger_scale = 0
     
     def eat(self, food):
         '''The animal only can eat food suitable food.
@@ -115,6 +123,13 @@ class Test(unittest.TestCase):
         self.bear = Omnivore()
         self.lion = Carnivore()
         self.goat = Vegetarian()
+
+    def test_new_bear_eats_steak_and_is_full(self):
+        steak = Meat()
+        self.bear.eat(steak)
+        expected = 10
+        actual = self.bear.hunger_scale
+        self.assertEqual(expected, actual)
 
     def test_a_new_bear_is_totally_hungry(self):
         expected = 0
