@@ -9,7 +9,7 @@ from datetime import datetime
 #1.1 DONE add class Animal()
 #2. DONE sleep duration calculation
 #3. DONE food diet type implementation
-#4. self.is_hungry
+#4. DONE self.is_hungry
 #5. scale for sleep and food
 #6. three different game types
 #7. separate tests out
@@ -26,6 +26,7 @@ class Animal():
         self.sleeping = False
         self.needs_sleep = True
         self.sleep_start_time = None
+        self.is_hungry = True
     
     def eat(self, food):
         '''The animal only can eat food suitable food.
@@ -70,18 +71,27 @@ class Animal():
 class Carnivore(Animal):
 
     def can_eat(self, food):
-        return food.is_meat
+        if food.is_meat:
+            self.is_hungry = False
+            return True
+        else:
+            return False
 
 
 class Vegetarian(Animal):
 
     def can_eat(self, food):
-        return food.is_vegetable
+        if food.is_vegetable:
+            self.is_hungry = False
+            return True
+        else:
+            return False
 
 
 class Omnivore(Animal):
 
     def can_eat(self, food):
+        self.is_hungry = False
         return food.is_vegetable or food.is_meat
     
         
@@ -174,6 +184,14 @@ class Test(unittest.TestCase):
         expected = True
         actual = self.bear.eat(steak)
         self.assertEqual(expected, actual)
+
+    def test_new_fed_bear_is_not_hungry_anymore(self):
+        steak = Meat()
+        actual = self.bear.eat(steak)
+        expected = False
+        actual = self.bear.is_hungry
+        self.assertEqual(expected, actual)
+
 
     def test_create_bear_and_feed_carrot(self):
         carrot = Vegetable()
@@ -290,6 +308,13 @@ class Test(unittest.TestCase):
         carrot = Vegetable()
         expected = False
         actual = self.lion.eat(carrot)
+        self.assertEqual(expected, actual)
+
+    def test_create_lion_and_feed_carrot(self):
+        carrot = Vegetable()
+        self.lion.eat(carrot)
+        expected = True
+        actual = self.lion.is_hungry
         self.assertEqual(expected, actual)
 
     def test_create_Carnivore(self):
