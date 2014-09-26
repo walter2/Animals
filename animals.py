@@ -14,12 +14,15 @@ from datetime import datetime
 # DONE CONTINUE: from email, remove double referece to sleep (needs_sleep)
 #          and hunger (is_hungry), fullness_scale, etc
 #          then do more on animal_short_before_play_implentation.txt
-#6. three different game types
+#6. DONE three basic game types, only reduce awake_energy
+#6.1 DONE awake and fullness constants
 #7. separate tests out
 
 
 #configs
 SLEEP_TIME_SECONDS = 1
+MAX_AWAKENESS = 10
+MAX_FULLNESS = 10
 
 class Animal():
     '''Base class for different animal types (Omnivore,
@@ -49,11 +52,11 @@ class Animal():
         '''
         if self.sleeping:
             return 'I am sleeping. Grr.'
-        elif self.fullness_scale == 10:
+        elif self.fullness_scale == MAX_FULLNESS:
             return 'I am so full ... I cannot eat anymore.'
         else:
             if self.can_eat(food):
-                self.fullness_scale = 10
+                self.fullness_scale = MAX_FULLNESS
                 return True
             else:
                 return False
@@ -77,7 +80,7 @@ class Animal():
         '''
         if int(datetime.now().second - self.sleep_start_time.second) > SLEEP_TIME_SECONDS:
             self.sleeping = False
-            self.awake_scale = 10
+            self.awake_scale = MAX_AWAKENESS
             return True
         else:
             return False
@@ -86,8 +89,8 @@ class Animal():
         '''play() takes a game as argument and
            reduces the awake_scale minus two points.
         '''
-        if self.awake_scale >= 2:
-            self.awake_scale -= 2
+        if (self.awake_scale - game.awake_energy_used) >= 2:
+            self.awake_scale -= game.awake_energy_used
             self.needs_sleep = True
             return True
         else:
@@ -95,7 +98,7 @@ class Animal():
 
 
 class Carnivore(Animal):
-
+    '''Carnivore class that only eats meat.'''
     def can_eat(self, food):
         if food.is_meat:
             return food.is_meat
@@ -104,7 +107,7 @@ class Carnivore(Animal):
 
 
 class Vegetarian(Animal):
-
+    '''Vegetarian class that only eats vegetables.'''
     def can_eat(self, food):
         if food.is_vegetable:            
             return food.is_vegetable
@@ -113,25 +116,26 @@ class Vegetarian(Animal):
 
 
 class Omnivore(Animal):
-
+    '''Omnivore class that eats meat and vegetables.'''
     def can_eat(self, food):
         self.fullness_scale = 10
         return food.is_vegetable or food.is_meat
     
 
 class Food():
+    '''Base class for food types.'''
     pass
 
 
 class Vegetable(Food):
-
+    '''Vegetable food.'''
     def __init__(self):
         self.is_vegetable = True
         self.is_meat = False
 
 
 class Meat(Food):
-
+    '''Meat food.'''
     def __init__(self):
         self.is_vegetable = False
         self.is_meat = True
@@ -141,25 +145,33 @@ class Game():
     '''Game is the base class for all games the animals
        can play.
     '''
-    pass
+    def __str__(self):
+        return self.name
 
 
 class HideAndSeek(Game):
-    '''Hide and seek game.'''
-    pass
+    '''Hide and seek game. It deducts two points of the awake_scale.'''
+    def __init__(self):
+        self.name = 'hide and seek'
+        self.awake_energy_used = 2
 
 
 class CatchFrisbee(Game):
-    '''Catch a frisbee game.'''
-    pass
+    '''Catch a frisbee game. It deducts one points of the awake_scale.'''
+    def __init__(self):
+        self.name = 'catch frisbee'
+        self.awake_energy_used = 1
 
 
 class JumpOverHedges(Game):
-    '''Jump over hedges game.'''
-    pass
+    '''Jump over hedges game. It deducts three points of the awake_scale.'''
+    def __init__(self):
+        self.name = 'jump over hedges'
+        self.awake_energy_used = 3
 
 
 class Test(unittest.TestCase):
+    '''Unittests for all classes'''
 
     def setUp(self):
         self.bear = Omnivore()
@@ -170,6 +182,68 @@ class Test(unittest.TestCase):
         self.hide_and_seek = HideAndSeek()
         self.catch_frisbee = CatchFrisbee()
         self.jump_over_hedges = JumpOverHedges()
+
+    def test_new_bear_that_slept_can_play_one_hide_and_seek_games(self):
+        self.bear.start_sleeping()
+        time.sleep(2)
+        self.bear.stop_sleeping()
+        expected = True
+        actual = self.bear.play(self.hide_and_seek)
+        self.assertEqual(expected, actual)
+
+    def test_new_bear_that_slept_cannot_play_five_hide_and_seek_games(self):
+        self.bear.start_sleeping()
+        time.sleep(2)
+        self.bear.stop_sleeping()
+        self.bear.play(self.hide_and_seek)
+        self.bear.play(self.hide_and_seek)
+        self.bear.play(self.hide_and_seek)
+        self.bear.play(self.hide_and_seek)
+        expected = False
+        actual = self.bear.play(self.hide_and_seek)
+        self.assertEqual(expected, actual)
+
+    def test_new_bear_that_slept_can_play_eight_times_catch_frisbee(self):
+        self.bear.start_sleeping()
+        time.sleep(2)
+        self.bear.stop_sleeping()
+        self.bear.play(self.catch_frisbee)
+        self.bear.play(self.catch_frisbee)
+        self.bear.play(self.catch_frisbee)
+        self.bear.play(self.catch_frisbee)
+        self.bear.play(self.catch_frisbee)
+        self.bear.play(self.catch_frisbee)
+        self.bear.play(self.catch_frisbee)
+        expected = True
+        actual = self.bear.play(self.catch_frisbee)
+        self.assertEqual(expected, actual)
+
+    def test_new_bear_that_slept_cannot_play_nine_times_catch_frisbee(self):
+        self.bear.start_sleeping()
+        time.sleep(2)
+        self.bear.stop_sleeping()
+        self.bear.play(self.catch_frisbee)
+        self.bear.play(self.catch_frisbee)
+        self.bear.play(self.catch_frisbee)
+        self.bear.play(self.catch_frisbee)
+        self.bear.play(self.catch_frisbee)
+        self.bear.play(self.catch_frisbee)
+        self.bear.play(self.catch_frisbee)
+        self.bear.play(self.catch_frisbee)
+        expected = False
+        actual = self.bear.play(self.catch_frisbee)
+        self.assertEqual(expected, actual)
+
+    def test_new_bear_that_slept_cannot_play_two_hide_and_seek__and__two_jump_over_hedges(self):
+        self.bear.start_sleeping()
+        time.sleep(2)
+        self.bear.stop_sleeping()
+        self.bear.play(self.hide_and_seek)
+        self.bear.play(self.hide_and_seek)
+        self.bear.play(self.jump_over_hedges)
+        expected = False
+        actual = self.bear.play(self.jump_over_hedges)
+        self.assertEqual(expected, actual)
 
     def test_hide_and_seek_is_a_game(self):
         expected = True
