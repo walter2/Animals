@@ -82,9 +82,9 @@ class Animal():
         else:
             return False
 
-    def play(self):
-        '''play() lets the animal play and reduces the awake_scale
-           minus two points.
+    def play(self, game):
+        '''play() takes a game as argument and
+           reduces the awake_scale minus two points.
         '''
         if self.awake_scale >= 2:
             self.awake_scale -= 2
@@ -137,6 +137,28 @@ class Meat(Food):
         self.is_meat = True
 
 
+class Game():
+    '''Game is the base class for all games the animals
+       can play.
+    '''
+    pass
+
+
+class HideAndSeek(Game):
+    '''Hide and seek game.'''
+    pass
+
+
+class CatchFrisbee(Game):
+    '''Catch a frisbee game.'''
+    pass
+
+
+class JumpOverHedges(Game):
+    '''Jump over hedges game.'''
+    pass
+
+
 class Test(unittest.TestCase):
 
     def setUp(self):
@@ -145,7 +167,25 @@ class Test(unittest.TestCase):
         self.goat = Vegetarian()
         self.steak = Meat()
         self.carrot = Vegetable()
+        self.hide_and_seek = HideAndSeek()
+        self.catch_frisbee = CatchFrisbee()
+        self.jump_over_hedges = JumpOverHedges()
 
+    def test_hide_and_seek_is_a_game(self):
+        expected = True
+        actual = isinstance(self.hide_and_seek, Game)
+        self.assertEqual(expected, actual)
+
+    def test_catch_frisbee_is_a_game(self):
+        expected = True
+        actual = isinstance(self.catch_frisbee, Game)
+        self.assertEqual(expected, actual)
+        
+    def test_jump_over_hedges_is_a_game(self):
+        expected = True
+        actual = isinstance(self.jump_over_hedges, Game)
+        self.assertEqual(expected, actual)
+        
     def test_new_bear_that_eat_cannot_eat_again(self):
         self.bear.eat(self.steak)
         expected = 'I am so full ... I cannot eat anymore.'
@@ -202,21 +242,20 @@ class Test(unittest.TestCase):
         self.bear.start_sleeping()
         time.sleep(2)
         self.bear.stop_sleeping()
-        #hide_and_seek = Game()
         expected = True
-        actual = self.bear.play()
+        actual = self.bear.play(self.hide_and_seek)
         self.assertEqual(expected, actual)
 
     def test_a_new_bear_that_slept_can_play_but_not_play_again(self):
         self.bear.start_sleeping()
-        actual = self.bear.play()
+        actual = self.bear.play(self.hide_and_seek)
         expected = False
-        actual = self.bear.play()
+        actual = self.bear.play(self.hide_and_seek)
         self.assertEqual(expected, actual)
 
     def test_a_new_bear_cannot_play(self):
         expected = False
-        actual = self.bear.play()
+        actual = self.bear.play(self.hide_and_seek)
         self.assertEqual(expected, actual)
 
     def test_sleeping_bear_cannot_go_to_sleep(self):
@@ -270,14 +309,14 @@ class Test(unittest.TestCase):
 
     def test_a_new_goat_that_slept_can_play_but_not_play_again(self):
         self.goat.start_sleeping()
-        actual = self.goat.play()
+        actual = self.goat.play(self.hide_and_seek)
         expected = False
-        actual = self.goat.play()
+        actual = self.goat.play(self.hide_and_seek)
         self.assertEqual(expected, actual)
 
     def test_a_new_goat_cannot_play(self):
         expected = False
-        actual = self.goat.play()
+        actual = self.goat.play(self.hide_and_seek)
         self.assertEqual(expected, actual)
 
     def test_sleeping_goat_cannot_go_to_sleep(self):
@@ -322,14 +361,14 @@ class Test(unittest.TestCase):
 
     def test_a_new_lion_that_slept_can_play_but_not_play_again(self):
         self.lion.start_sleeping()
-        actual = self.lion.play()
+        actual = self.lion.play(self.hide_and_seek)
         expected = False
-        actual = self.lion.play()
+        actual = self.lion.play(self.hide_and_seek)
         self.assertEqual(expected, actual)
 
     def test_a_new_lion_cannot_play(self):
         expected = False
-        actual = self.lion.play()
+        actual = self.lion.play(self.hide_and_seek)
         self.assertEqual(expected, actual)
 
     def test_sleeping_lion_cannot_go_to_sleep(self):
