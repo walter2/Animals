@@ -10,7 +10,10 @@ from datetime import datetime
 #2. DONE sleep duration calculation
 #3. DONE food diet type implementation
 #4. DONE self.is_hungry
-#5. scale for sleep and food
+#5. DONE scale for sleep and food
+#CONTINUE: from email, remove double referece to sleep (needs_sleep)
+#          and hunger (is_hungry), fullness_scale, etc
+#          then do more on animal_short_before_play_implentation.txt
 #6. three different game types
 #7. separate tests out
 
@@ -25,19 +28,16 @@ class Animal():
     def __init__(self):
         '''Default attributes of the animal:
            sleeping ... default: False; if the animal is currently sleeping or not
-           needs_sleep ... default: True; if the animal is tired or not
-           sleep_start_time ... default: None; time (datetime) when animal starts sleeping
-           is_hungry ... default: True; if animal needs food
-           hunger_scale ... default: 0; 0 means completely hungry,
+           sleep_start_time ... default: None; time (datetime) when animal
+                                starts sleeping           
+           fullness_scale ... default: 0; 0 means completely hungry,
                             10 means animal cannot eat more
            awake_scale ... default: 0; 0 means the animal is completely tired,
                            10 means the animal is fully awake
         '''
         self.sleeping = False
-        self.needs_sleep = True
         self.sleep_start_time = None
-        self.is_hungry = True
-        self.hunger_scale = 0
+        self.fullness_scale = 0
         self.awake_scale = 0
     
     def eat(self, food):
@@ -48,7 +48,7 @@ class Animal():
             return 'I am sleeping. Grr.'
         else:
             if self.can_eat(food):
-                self.hunger_scale = 10
+                self.fullness_scale = 10
                 return True
             else:
                 return False
@@ -61,7 +61,6 @@ class Animal():
         if not self.sleeping:
             self.sleep_start_time = datetime.now()
             self.sleeping = True
-            self.needs_sleep = False
             return True
         else:
             return False
@@ -79,7 +78,11 @@ class Animal():
             return False
 
     def play(self):
-        if not self.needs_sleep:
+        '''play() lets the animal play and reduces the awake_scale
+           minus two points.
+        '''
+        if self.awake_scale >= 2:
+            self.awake_scale -= 2
             self.needs_sleep = True
             return True
         else:
@@ -126,7 +129,6 @@ class Meat():
         self.is_vegetable = False
         self.is_meat = True
 
-
 class Test(unittest.TestCase):
 
     def setUp(self):
@@ -151,17 +153,17 @@ class Test(unittest.TestCase):
         steak = Meat()
         self.bear.eat(steak)
         expected = 10
-        actual = self.bear.hunger_scale
+        actual = self.bear.fullness_scale
         self.assertEqual(expected, actual)
 
     def test_a_new_bear_is_totally_hungry(self):
         expected = 0
-        actual = self.bear.hunger_scale
+        actual = self.bear.fullness_scale
         self.assertEqual(expected, actual)
 
     def test_a_new_bear_is_hungry(self):
-        expected = True
-        actual = self.bear.is_hungry
+        expected = 0
+        actual = self.bear.fullness_scale
         self.assertEqual(expected, actual)
 
     def test_a_new_bear_can_sleep_and_sleeps(self):
@@ -188,6 +190,9 @@ class Test(unittest.TestCase):
 
     def test_a_new_bear_that_slept_can_play(self):
         self.bear.start_sleeping()
+        time.sleep(2)
+        self.bear.stop_sleeping()
+        #hide_and_seek = Game()
         expected = True
         actual = self.bear.play()
         self.assertEqual(expected, actual)
@@ -235,7 +240,6 @@ class Test(unittest.TestCase):
         actual = self.bear.is_hungry
         self.assertEqual(expected, actual)
 
-
     def test_create_bear_and_feed_carrot(self):
         carrot = Vegetable()
         expected = True
@@ -254,13 +258,7 @@ class Test(unittest.TestCase):
         carrots = Vegetable()
         self.goat.eat(carrots)
         expected = 10
-        actual = self.goat.hunger_scale
-        self.assertEqual(expected, actual)
-
-    def test_a_new_goat_that_slept_can_play(self):
-        self.goat.start_sleeping()
-        expected = True
-        actual = self.goat.play()
+        actual = self.goat.fullness_scale
         self.assertEqual(expected, actual)
 
     def test_a_new_goat_that_slept_can_play_but_not_play_again(self):
@@ -316,13 +314,7 @@ class Test(unittest.TestCase):
         steak = Meat()
         self.lion.eat(steak)
         expected = 10
-        actual = self.lion.hunger_scale
-        self.assertEqual(expected, actual)
-
-    def test_a_new_lion_that_slept_can_play(self):
-        self.lion.start_sleeping()
-        expected = True
-        actual = self.lion.play()
+        actual = self.lion.fullness_scale
         self.assertEqual(expected, actual)
 
     def test_a_new_lion_that_slept_can_play_but_not_play_again(self):
@@ -370,8 +362,8 @@ class Test(unittest.TestCase):
     def test_create_lion_and_feed_carrot(self):
         carrot = Vegetable()
         self.lion.eat(carrot)
-        expected = True
-        actual = self.lion.is_hungry
+        expected = 0
+        actual = self.lion.fullness_scale
         self.assertEqual(expected, actual)
 
     def test_create_Carnivore(self):
